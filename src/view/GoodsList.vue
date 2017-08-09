@@ -1,14 +1,7 @@
 <template>
   <div>
   	<nav-header></nav-header>
-    <div class="nav-breadcrumb-wrap">
-      <div class="container">
-        <nav class="nav-breadcrumb">
-          <a href="/">Home</a>
-          <span>Goods</span>
-        </nav>
-      </div>
-    </div>
+  	<nav-bread>商品</nav-bread>
     <div class="accessory-result-page accessory-page">
       <div class="container">
         <div class="filter-nav">
@@ -50,7 +43,7 @@
               <ul>
                 <li v-for="item in GoodsList">
                   <div class="pic">
-                    <a href="#"><img :src="'./static/img/' + item.productImg" alt=""></a>
+                    <a href="#"><img v-lazy="'./static/img/' + item.productImg" alt=""></a>
                   </div>
                   <div class="main">
                     <div class="name">{{item.productName}}</div>
@@ -74,6 +67,7 @@
   import axios from 'axios'
   import NavHeader from '@/components/Header.vue'
   import NavFooter from '@/components/Footer.vue'
+  import NavBread from '@/components/NavBread.vue'
   export default {
     name: 'GoodsList',
     data () {
@@ -83,17 +77,18 @@
     },
     components: {
       NavHeader,
-      NavFooter
+      NavFooter,
+      NavBread
     },
     mounted: function() {
       this.getGoodsList()
     },
     methods: {
       getGoodsList() {
-      	axios.get('/goods').then((result) => {
-      	  let res = result.data.result
-      	  this.GoodsList = res
-      	})
+        axios.get('/goods').then((result) => {
+          let res = result.data.result
+          this.GoodsList = res
+        })
       }
     }
   }
