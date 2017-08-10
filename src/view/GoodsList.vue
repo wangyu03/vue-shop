@@ -20,10 +20,10 @@
             <dl class="filter-price">
               <dt>价格</dt>
               <dd>
-                <a href="javascript:void(0)" :class="{'cur':priceChecked == 'all'}">All</a>
+                <a href="javascript:void(0)" @click="setPriceFilter('all')":class="{'cur':priceChecked == 'all'}">All</a>
               </dd>
               <dd v-for="(price, index) in priceFilter">
-                <a href="javascript:void(0)" @click="setPriceFilter" :class="{'cur':priceChecked == index}">{{price.startPrice}} - {{price.endPrice}}</a>
+                <a href="javascript:void(0)" @click="setPriceFilter(index)" :class="{'cur':priceChecked == index}">{{price.startPrice}} - {{price.endPrice}}</a>
               </dd>
              
             </dl>
@@ -35,11 +35,11 @@
               <ul>
                 <li v-for="item in GoodsList">
                   <div class="pic">
-                    <a href="#"><img v-lazy="'./static/img/' + item.productImg" alt=""></a>
+                    <a href="#"><img v-lazy="'/static/img/' + item.productImage" alt=""></a>
                   </div>
                   <div class="main">
                     <div class="name">{{item.productName}}</div>
-                    <div class="price">￥{{item.productPrice}}</div>
+                    <div class="price">￥{{item.salePrice}}</div>
                     <div class="btn-area">
                       <a href="javascript:;" class="btn btn--m">加入购物车</a>
                     </div>
@@ -57,9 +57,9 @@
 
 <script>
   import axios from 'axios'
-  import NavHeader from '@/components/Header.vue'
-  import NavFooter from '@/components/Footer.vue'
-  import NavBread from '@/components/NavBread.vue'
+  import NavHeader from '@/components/Header'
+  import NavFooter from '@/components/Footer'
+  import NavBread from '@/components/NavBread'
   export default {
     name: 'GoodsList',
     data () {
@@ -101,19 +101,19 @@
       		sort: this.sortFlag ? 1 : -1,
       		priceLevel: this.priceChecked
       	}
-        axios.get('/goods/list', {params:param}).then((result) => {
+        axios.get("/goods/list", {params:param}).then((result) => {
           console.log(result)
-          let res = result.data.result[0].result
+          let res = result.data.result
           this.GoodsList = res
         })
       },
       sortGoods() {
       	this.sortFlag = !this.sortFlag;
-      	this.getGoodList();
+      	this.getGoodsList();
       },
       setPriceFilter(index) {
         this.priceChecked = index;
-        this.getGoodList();
+        this.getGoodsList();
       }
     }
   }
