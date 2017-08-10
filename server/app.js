@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+// 新添加
 var goods = require('./routes/goods');
 
 var app = express();
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+// 新添加
 app.use('/goods', goods);
 
 // catch 404 and forward to error handler
@@ -45,4 +47,5 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+// 新添加
 module.exports = app;
