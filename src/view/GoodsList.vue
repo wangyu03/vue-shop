@@ -7,7 +7,7 @@
         <div class="filter-nav">
           <span class="sortby">Sort by:</span>
           <a href="javascript:void(0)" class="default cur">Default</a>
-          <a href="javascript:void(0)" class="price">Price
+          <a href="javascript:void(0)" class="price" @click="sortGoods">价格
             <svg class="icon icon-arrow-short">
               <use xlink:href="#icon-arrow-short"></use>
             </svg>
@@ -18,22 +18,14 @@
           <!-- filter -->
           <div class="filter stopPop" id="filter">
             <dl class="filter-price">
-              <dt>Price:</dt>
+              <dt>价格</dt>
               <dd>
-                <a href="javascript:void(0)">All</a>
+                <a href="javascript:void(0)" :class="{'cur':priceChecked == 'all'}">All</a>
               </dd>
-              <dd>
-                <a href="javascript:void(0)">0 - 100</a>
+              <dd v-for="(price, index) in priceFilter">
+                <a href="javascript:void(0)" @click="setPriceFilter" :class="{'cur':priceChecked == index}">{{price.startPrice}} - {{price.endPrice}}</a>
               </dd>
-              <dd>
-                <a href="javascript:void(0)">100 - 500</a>
-              </dd>
-              <dd>
-                <a href="javascript:void(0)">500 - 1000</a>
-              </dd>
-              <dd>
-                <a href="javascript:void(0)">1000 - 2000</a>
-              </dd>
+             
             </dl>
           </div>
 
@@ -72,7 +64,27 @@
     name: 'GoodsList',
     data () {
       return {
-        GoodsList: Array
+        GoodsList: Array,
+        sortFlag: true,
+        priceChecked: 'all',
+        priceFilter: [
+          {
+            startPrice: '0.00',
+            endPrice: '100.00'
+          },
+          {
+            startPrice: '101.00',
+            endPrice: '500.00'
+          },
+          {
+            startPrice: '501.00',
+            endPrice: '1000.00'
+          },
+          {
+            startPrice: '1001.00',
+            endPrice: '5000.00'
+          }
+        ]
       }
     },
     components: {
@@ -85,10 +97,23 @@
     },
     methods: {
       getGoodsList() {
-        axios.get('/goods').then((result) => {
-          let res = result.data.result
+      	let param = {
+      		sort: this.sortFlag ? 1 : -1,
+      		priceLevel: this.priceChecked
+      	}
+        axios.get('/goods/list', {params:param}).then((result) => {
+          console.log(result)
+          let res = result.data.result[0].result
           this.GoodsList = res
         })
+      },
+      sortGoods() {
+      	this.sortFlag = !this.sortFlag;
+      	this.getGoodList();
+      },
+      setPriceFilter(index) {
+        this.priceChecked = index;
+        this.getGoodList();
       }
     }
   }
