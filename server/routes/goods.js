@@ -28,24 +28,25 @@ router.get("/list", function(req, res, next) {
   let param = {};
   if (priceLevel != 'all') {
   	switch (priceLevel) {
-	    case '0': priceGt = 0; priceLe = 100; break;
-	    case '1': priceGt = 101; priceLe = 500; break;
-	    case '2': priceGt = 501; priceLe = 1000; break;
-	    case '3': priceGt = 1001; priceLe = 5000; break;
+	    case '0': priceGt = 0; priceLte = 100; break;
+	    case '1': priceGt = 101; priceLte = 500; break;
+	    case '2': priceGt = 501; priceLte = 1000; break;
+	    case '3': priceGt = 1001; priceLte = 5000; break;
+	  }
+  	param = {
+	    salePrice: {
+	    	$gt: priceGt,
+	    	$lte: priceLte
+	    }
 	  }
   }
   
-  let param = {
-    salePrice: {
-    	$gt: priceGt,
-    	$lte: priceLte
-    }
-  }
+  
   let goodModel = Goods.find(param);
   
   goodModel.sort({'salePrice': sort})
     
-  let goodModel = Goods.exec({}, function(err, docs) {
+  goodModel.exec({params:param}, function(err, docs) {
   //  console.log(docs);
     res.json({
       status: '0',
