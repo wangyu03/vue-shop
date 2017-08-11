@@ -45,6 +45,9 @@
                     </div>
                   </div>
                 </li>
+                <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
+                  ...
+                </div>
               </ul>
             </div>
           </div>
@@ -62,10 +65,13 @@
   import NavBread from '@/components/NavBread'
   export default {
     name: 'GoodsList',
-    data() {
+    data () {
       return {
         GoodsList: Array,
         sortFlag: true,
+        busy: true,
+        page: 1,
+        pagesize: 8,
         priceChecked: 'all',
         priceFilter: [{
             startPrice: '0.00',
@@ -95,17 +101,35 @@
       this.getGoodsList()
     },
     methods: {
-      getGoodsList() {
+      getGoodsList(flag) {
         let param = {
           sort: this.sortFlag ? 1 : -1,
-          priceLevel: this.priceChecked
+          priceLevel: this.priceChecked,
+          page: this.page,
+          pagesize: this.pagesize
         }
         axios.get("/goods/list", {
           params: param
         }).then((result) => {
           console.log(result)
-          let res = result.data.result
-          this.GoodsList = res
+          let res = result.data;
+          console.log(res)
+          if(res.status === '0') {
+            console.log(res.result)
+            if(flag) {
+              this.GoodsList = this.GoodsList.concat(res.result);
+              if(res.result.length === 0) {
+                this.busy = true;
+              } else {
+                this.busy = false;
+              }
+            } else {
+              this.GoodsList = res.result;
+              this.busy = false;
+            }
+          } else {
+            alert('系统繁忙')
+          }
         })
       },
       sortGoods() {
@@ -115,6 +139,13 @@
       setPriceFilter(index) {
         this.priceChecked = index;
         this.getGoodsList();
+      },
+      loadMore() {
+        this.busy = true;
+        setTimeout(() => {
+          this.page++;
+          this.getGoodsList(true);
+        }, 1000);
       }
     }
   }

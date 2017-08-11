@@ -6,11 +6,14 @@ import router from './router'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueLazyLoad from 'vue-lazyload' 
+import VueInfiniteScroll from 'vue-infinite-scroll'
+
 import '../static/css/base.css'
 import '../static/css/checkout.css'
 import '../static/css/login.css'
 import '../static/css/product.css'
 
+Vue.use(VueInfiniteScroll)
 Vue.use(VueAxios, axios)
 Vue.use(VueLazyLoad, {
 	loading: '../static/loading/loading-spinning-bubbles.svg'

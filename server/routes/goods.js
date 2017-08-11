@@ -24,9 +24,13 @@ mongoose.connection.on('disonnected', function() {
 router.get("/list", function(req, res, next) {
 
   let sort = req.param('sort');
+  let page = parseInt(req.param('page'));
+  let pagesize = parseInt(req.param('pagesize'));
+  let skip = (page - 1) * pagesize;
   let priceLevel = req.param('priceLevel');
-  let priceGt = '', priceLte = '';
-    
+  let priceGt = '',
+    priceLte = '';
+
   let param = {};
   if(priceLevel != 'all') {
     switch(priceLevel) {
@@ -35,15 +39,15 @@ router.get("/list", function(req, res, next) {
         priceLte = 100;
         break;
       case '1':
-        priceGt = 101;
+        priceGt = 100;
         priceLte = 500;
         break;
       case '2':
-        priceGt = 501;
+        priceGt = 500;
         priceLte = 1000;
         break;
       case '3':
-        priceGt = 1001;
+        priceGt = 1000;
         priceLte = 5000;
         break;
     }
@@ -54,7 +58,7 @@ router.get("/list", function(req, res, next) {
       }
     }
   }
-  let goodModel = Goods.find(param);
+  let goodModel = Goods.find(param).limit(pagesize).skip(skip);
 
   goodModel.sort({
     'salePrice': sort
