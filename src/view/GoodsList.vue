@@ -45,10 +45,10 @@
                     </div>
                   </div>
                 </li>
-                <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
-                  ...
-                </div>
               </ul>
+              <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" class="chargement">
+                加载更多
+              </div>
             </div>
           </div>
         </div>
@@ -65,7 +65,7 @@
   import NavBread from '@/components/NavBread'
   export default {
     name: 'GoodsList',
-    data () {
+    data() {
       return {
         GoodsList: Array,
         sortFlag: true,
