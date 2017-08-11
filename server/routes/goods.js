@@ -22,32 +22,46 @@ mongoose.connection.on('disonnected', function() {
 })
 
 router.get("/list", function(req, res, next) {
+
   let sort = req.param('sort');
   let priceLevel = req.param('priceLevel');
   let priceGt = '', priceLte = '';
-  let param = {};
-  if (priceLevel != 'all') {
-  	switch (priceLevel) {
-	    case '0': priceGt = 0; priceLte = 100; break;
-	    case '1': priceGt = 101; priceLte = 500; break;
-	    case '2': priceGt = 501; priceLte = 1000; break;
-	    case '3': priceGt = 1001; priceLte = 5000; break;
-	  }
-  	param = {
-	    salePrice: {
-	    	$gt: priceGt,
-	    	$lte: priceLte
-	    }
-	  }
-  }
-  
-  
-  let goodModel = Goods.find(param);
-  
-  goodModel.sort({'salePrice': sort})
     
-  goodModel.exec({params:param}, function(err, docs) {
-  //  console.log(docs);
+  let param = {};
+  if(priceLevel != 'all') {
+    switch(priceLevel) {
+      case '0':
+        priceGt = 0;
+        priceLte = 100;
+        break;
+      case '1':
+        priceGt = 101;
+        priceLte = 500;
+        break;
+      case '2':
+        priceGt = 501;
+        priceLte = 1000;
+        break;
+      case '3':
+        priceGt = 1001;
+        priceLte = 5000;
+        break;
+    }
+    param = {
+      salePrice: {
+        $gt: priceGt,
+        $lte: priceLte
+      }
+    }
+  }
+  let goodModel = Goods.find(param);
+
+  goodModel.sort({
+    'salePrice': sort
+  })
+
+  goodModel.exec({}, function(err, docs) {
+    console.log(docs);
     res.json({
       status: '0',
       result: docs
