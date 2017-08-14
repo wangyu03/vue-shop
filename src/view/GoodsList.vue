@@ -1,13 +1,13 @@
 <template>
   <div>
     <nav-header></nav-header>
-    <nav-bread>商品</nav-bread>
+    <nav-bread>{{goods}}</nav-bread>
     <div class="accessory-result-page accessory-page">
       <div class="container">
         <div class="filter-nav">
           <span class="sortby">Sort by:</span>
-          <a href="javascript:void(0)" class="default cur">Default</a>
-          <a href="javascript:void(0)" class="price" @click="sortGoods">价格
+          <a href="javascript:void(0)" class="default cur" @click="defaultGoods">Default</a>
+          <a href="javascript:void(0)" class="price" @click="sortGoods">{{price1}}
             <svg class="icon icon-arrow-short">
               <use xlink:href="#icon-arrow-short"></use>
             </svg>
@@ -41,18 +41,38 @@
                     <div class="name">{{item.productName}}</div>
                     <div class="price">￥{{item.salePrice}}</div>
                     <div class="btn-area">
-                      <a href="javascript:;" class="btn btn--m">加入购物车</a>
+                      <a href="javascript:;" class="btn btn--m" @click="addCart(item.productId)">加入购物车</a>
                     </div>
                   </div>
                 </li>
               </ul>
-              <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" class="chargement">
-                加载更多
+              <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
+
               </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- 模态框 -->
+      <div class="md-modal modal-msg md-modal-transition" :class="{'md-show':mdShow}">
+        <div class="md-modal-inner">
+          <div class="md-top">
+            <div class="md-title">信息提示</div>
+            <button class="md-close">Close</button>
+          </div>
+          <div class="md-content">
+            <div class="confirm-tips">
+              <div class="error-wrap">
+                <span class="error error-show">请先登录否则无法加入购物车</span>
+              </div>
+            </div>
+            <div class="login-wrap">
+              <a href="javascript:;" class="btn-login" @click="closeModal">关闭</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="md-overlay" v-if="mdShow"></div>
     </div>
     <nav-footer></nav-footer>
   </div>
@@ -72,7 +92,10 @@
         busy: true,
         page: 1,
         pagesize: 8,
+        goods: '商品',
+        price1: '从低到高 ↑',
         priceChecked: 'all',
+        mdShow: false,
         priceFilter: [{
             startPrice: '0.00',
             endPrice: '100.00'
@@ -133,12 +156,41 @@
         })
       },
       sortGoods() {
+      	this.page = 1;
+      	if (this.sortFlag) {
+      		this.price1 = '从高到低 ↓'
+      	} else {
+      		this.price1 = '从低到高 ↑'
+      	}
         this.sortFlag = !this.sortFlag;
         this.getGoodsList();
       },
+      defaultGoods() {
+      	let param = {
+          sort: 0,
+          priceLevel: this.priceChecked,
+          page: this.page,
+          pagesize: this.pagesize
+        }
+      	axios.get('/goods/list',{params:param}).then( (result) => {
+      		console.log('000')
+      	})
+      },
       setPriceFilter(index) {
+      	this.page = 1;
         this.priceChecked = index;
         this.getGoodsList();
+      },
+      addCart(productId) {
+        axios.post('/goods/addCart',{ productId }).then( (result) => {
+        	let res = result.data
+        	if (res.status === '0') {
+        		console.log(res.msg);
+        	} else{
+            this.mdShow = true;
+        		console.log(res.msg);
+        	}
+        })
       },
       loadMore() {
         this.busy = true;
@@ -146,6 +198,9 @@
           this.page++;
           this.getGoodsList(true);
         }, 1000);
+      },
+      closeModal () {
+        this.mdShow = false
       }
     }
   }

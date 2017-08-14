@@ -60,12 +60,13 @@ router.get("/list", function(req, res, next) {
   }
   let goodModel = Goods.find(param).limit(pagesize).skip(skip);
 
-  goodModel.sort({
-    'salePrice': sort
-  })
+  
+	goodModel.sort({
+    	'salePrice': sort
+	})
 
   goodModel.exec({}, function(err, docs) {
-    console.log(docs);
+    // console.log(docs);
     res.json({
       status: '0',
       result: docs
@@ -106,7 +107,8 @@ router.post("/addCart", function(req,res,next){
         }else{
           res.json({
             status:"0",
-            result:"商品数量添加成功！"
+            msg: "商品数量添加成功!",
+            result: doc3
           })
         }
       });
@@ -126,9 +128,9 @@ router.post("/addCart", function(req,res,next){
                 })
               }else{
                 res.json({
-                  status:0,
-                  msg:'',
-                  result:"此商品第一次加入购物车！"
+                  status:'0',
+                  msg:'此商品第一次加入购物车!',
+                  result:doc2
                 })
               }
             })

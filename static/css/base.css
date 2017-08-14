@@ -874,10 +874,6 @@ a:hover {
 .btn--gray-white:hover, .btn--gray-white[href]:hover {
   background-color: #f0f0f0;
 }
-.chargement {
-	color: orangered;
-	text-align: center;
-}
 
 .btn--m {
   height: 40px;
