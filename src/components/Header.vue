@@ -17,8 +17,8 @@
           <!--<a href="/" class="navbar-link">我的账户</a>-->
           <span class="navbar-link"></span>
           <span v-text="nickName" v-if="nickName"></span>
-          <a href="javascript:void(0)" class="navbar-link" v-if="!nickName" @click="loginModelFlag=true">Login</a>
-          <a href="javascript:void(0)" class="navbar-link" @click="logout">Logout</a>
+          <a href="javascript:void(0)" class="navbar-link" v-if="!nickName" @click="loginModelFlag=true">登录</a>
+          <a href="javascript:void(0)" class="navbar-link" @click="logout">退出</a>
           <div class="navbar-cart-container">
             <span class="navbar-cart-count"></span>
             <a class="navbar-link navbar-cart-link" href="/#/cart">

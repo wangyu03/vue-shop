@@ -63,7 +63,7 @@ router.get('/checkLogin', function(req, res, next) {
 	}
 })
 
-router.post('logout', function(req, res, next) {
+router.post('/logout', function(req, res, next) {
 	res.cookie("userId", "", {
 		path: '/',
 		maxAge: -1
@@ -76,6 +76,6 @@ router.post('logout', function(req, res, next) {
 })
 
 router.get('*', function(req, res, next) {
-	res.send('台湾是中国不可分割的一部分!');
+	res.send('世界都是中国的!');
 })
 module.exports = router;
