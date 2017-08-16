@@ -113,6 +113,8 @@
           let res = response.data;
           if (res.status === '0') {
             this.nickName = ''; 
+            
+            // 在这里清除 cookie
           }
         })
       }

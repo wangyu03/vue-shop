@@ -53,26 +53,25 @@
           </div>
         </div>
       </div>
-      <!-- 模态框 -->
-      <div class="md-modal modal-msg md-modal-transition" :class="{'md-show':mdShow}">
-        <div class="md-modal-inner">
-          <div class="md-top">
-            <div class="md-title">信息提示</div>
-            <button class="md-close">Close</button>
-          </div>
-          <div class="md-content">
-            <div class="confirm-tips">
-              <div class="error-wrap">
-                <span class="error error-show">请先登录否则无法加入购物车</span>
-              </div>
-            </div>
-            <div class="login-wrap">
-              <a href="javascript:;" class="btn-login" @click="closeModal">关闭</a>
-            </div>
-          </div>
+      <!-- 未登录的情况下 -->
+      <modal :mdShow='mdShow'>
+        <button slot="btnClose" class="md-close" @click="mdShow = false">close</button>
+        <p slot="message">请先登录，否则无法加入购物车</p>
+        <div slot="btnGroup">
+          <a href="javascript:;" class="btn-login" @click="mdShow = false">关闭</a>   
         </div>
-      </div>
-      <div class="md-overlay" v-if="mdShow"></div>
+      </modal>
+
+      <!-- 成功的情况下 -->
+      
+      <modal :mdShow="mdShowCart">
+        <button slot="btnClose" class="md-close" @click="mdShowCart = false">close</button>
+        <p slot="message">加入购物车成功</p>
+        <div slot="btnGroup">
+          <a href="javascript:;" class="btn btn--m" @click="mdShowCart = false">继续购物</a>  
+          <router-link class="btn btn--m" to="/cart">查看购物车</router-link>   
+        </div>
+      </modal>
     </div>
     <nav-footer></nav-footer>
   </div>
@@ -83,6 +82,8 @@
   import NavHeader from '@/components/Header'
   import NavFooter from '@/components/Footer'
   import NavBread from '@/components/NavBread'
+  import Modal from '@/components/Modal'
+  
   export default {
     name: 'GoodsList',
     data() {
@@ -96,6 +97,7 @@
         price1: '从低到高 ↑',
         priceChecked: 'all',
         mdShow: false,
+        mdShowCart: false,
         priceFilter: [{
             startPrice: '0.00',
             endPrice: '100.00'
@@ -118,7 +120,8 @@
     components: {
       NavHeader,
       NavFooter,
-      NavBread
+      NavBread,
+      Modal
     },
     mounted: function() {
       this.getGoodsList()
@@ -185,6 +188,7 @@
         axios.post('/goods/addCart',{ productId }).then( (result) => {
         	let res = result.data
         	if (res.status === '0') {
+            this.mdShowCart = true;
         		console.log(res.msg);
         	} else{
             this.mdShow = true;

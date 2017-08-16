@@ -63,7 +63,8 @@ router.get('/checkLogin', function(req, res, next) {
 	}
 })
 
-router.post('/logout', function(req, res, next) {
+
+	router.post('/logout', function(req, res, next) {
 	res.cookie("userId", "", {
 		path: '/',
 		maxAge: -1
@@ -72,6 +73,84 @@ router.post('/logout', function(req, res, next) {
 		status: '0',
 		msg: '',
 		result: '退出成功'
+	})
+})
+
+// 查询购物车列表
+router.get("/cartList",function(req, res, next) {
+	let userId = req.cookies.userId;
+	User.findOne({userId:userId}, function(err, doc) {
+		if (err) {
+			res.json({
+				status: '1',
+				msg: err.message,
+				result: ''
+			})
+		} else {
+			if (doc) {
+				res.json({
+					status: '0',
+				  msg: '',
+					result: doc.cartList
+				})
+			}
+		}
+	})
+})
+
+// 购物车数量操作
+router.post("/cartEdit", function(req, res, next) {
+	let userId = req.cookies.userId,
+		 productId = req.body.productId,
+	   productNum = req.body.productNum;
+	
+	User.update({"userId": userId, "cartList.productId": productId}, {
+	  "cartList.$.productNum" : productNum
+		 //  "cartList"
+	}, function(err, doc) {
+    if (err) {
+			res.json({
+				status: '1',
+				msg: err.message,
+				result: ''
+			})
+		} else {
+			res.json({
+				status: '0',
+				msg: '',
+				result: '商品数量改变成功'
+			})
+		}
+	})
+})
+
+// 删除商品
+router.post("/cartDel", function(req, res, next) {
+	var userId = req.cookies.userId,
+			productId = req.body.productId;
+
+	User.update({
+		userId: userId
+	},{
+		$pull: {
+			'cartList': {
+				'productId': productId
+			}
+		}
+	}, function(err, doc) {
+		if (err) {
+			res.json({
+				status: '1',
+				msg: err.message,
+				result:''
+			})
+		} else {
+			res.json({
+				status: '0',
+				msg: '',
+				result: '商品删除成功'
+			})
+		}
 	})
 })
 
