@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Goods = require('../models/goods');
 
 // 连接数据库
-mongoose.connect('mongodb://localhost:27019/shop');
+mongoose.connect('mongodb://localhost:27019/shou');
 
 // 当数据库连接成功的时候触发
 mongoose.connection.on('connected', function() {
@@ -126,7 +126,8 @@ router.post("/addCart", function(req,res,next){
       // 通过productId查询出一条商品，然后把这一条商品，存入到user的cartList里面。
         Goods.findOne({productId:productId},function(err1,goodsDoc){
           // 添加相同的商品，商品只添加一次，数量加1
-            goodsDoc.productNum = 1 
+            goodsDoc.productNum = 1;
+            goodsDoc.checked = 1; 
             userDoc.cartList.push(goodsDoc);
             userDoc.save(function(err2,doc2){
               if(err2){

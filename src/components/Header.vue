@@ -36,7 +36,7 @@
       <div class="md-modal-inner">
         <div class="md-top">
           <div class="md-title">login in</div>
-          <button class="md-close" @click="()=>{loginModelFlag=false}">Close</button>
+          <button class="md-close" @click="loginModelFlag = false">Close</button>
         </div>
         <div class="md-content">
           <div class="confirm-tips">

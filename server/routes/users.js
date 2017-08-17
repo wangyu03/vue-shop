@@ -24,12 +24,12 @@ router.post('/login', function(req, res, next) {
     	if (doc) {
 				res.cookie('userId', doc.userId, {
 					path: '/',
-					maxAge: 360000
+					maxAge: 60*60*24
 				})
 				
 				res.cookie('userName', doc.userName, {
 					path: '/',
-					maxAge: 360000
+					maxAge: 60*60*24
 				})
 
         if (doc) {
@@ -102,11 +102,11 @@ router.get("/cartList",function(req, res, next) {
 router.post("/cartEdit", function(req, res, next) {
 	let userId = req.cookies.userId,
 		 productId = req.body.productId,
-	   productNum = req.body.productNum;
-	
+	   productNum = req.body.productNum,
+     checked = req.body.checked;	
 	User.update({"userId": userId, "cartList.productId": productId}, {
-	  "cartList.$.productNum" : productNum
-		 //  "cartList"
+	  "cartList.$.productNum" : productNum,
+	  "cartList.$.checked" : checked
 	}, function(err, doc) {
     if (err) {
 			res.json({
@@ -150,6 +150,42 @@ router.post("/cartDel", function(req, res, next) {
 				msg: '',
 				result: '商品删除成功'
 			})
+		}
+	})
+})
+
+// 全选 
+router.post("/editCheckAll", function(req, res, next) {
+	let userId = req.cookies.userId,
+			checkAll = req.body.checkAll ? '1' : '0';
+	
+  User.findOne({userId:userId},function(err, doc) {
+		if (err) {
+			res.json({
+				status: '1',
+				msg: err.message,
+				result:''
+			})
+		} else {
+			doc.cartList.forEach((item) => {
+				item.checked = checkAll;
+			})
+      doc.save(function(err1, doc1) {
+				if (err1) {
+					res.json({
+						status: '1',
+						msg: err.message,
+						result:''
+					})
+				} else {
+          res.json({
+						status: '0',
+						msg: '',
+						result: '操作成功'
+					})
+				}
+			})
+
 		}
 	})
 })
