@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Goods = require('../models/goods');
 
 // 连接数据库
-mongoose.connect('mongodb://localhost:27019/shou');
+mongoose.connect('mongodb://localhost:27019/shop');
 
 // 当数据库连接成功的时候触发
 mongoose.connection.on('connected', function() {
@@ -35,20 +35,20 @@ router.get("/list", function(req, res, next) {
   if(priceLevel != 'all') {
     switch(priceLevel) {
       case '0':
-        priceGt = 0;
-        priceLte = 100;
-        break;
-      case '1':
-        priceGt = 100;
+        priceGt = 1; 
         priceLte = 500;
         break;
-      case '2':
+      case '1':
         priceGt = 500;
         priceLte = 1000;
         break;
-      case '3':
+      case '2':
         priceGt = 1000;
         priceLte = 5000;
+        break;
+      case '3':
+        priceGt = 5000;
+        priceLte = 50000;
         break;
     }
     param = {
@@ -58,12 +58,17 @@ router.get("/list", function(req, res, next) {
       }
     }
   }
+  console.log(param)
   let goodModel = Goods.find(param).limit(pagesize).skip(skip);
 
-  
-	goodModel.sort({
-    	'salePrice': sort
-	})
+  if (sort != 0) {
+    goodModel.sort({
+    	'salePrice': sort 
+	  })
+  } else {
+    
+  }
+	
 
   goodModel.exec({}, function(err, docs) {
     // console.log(docs);

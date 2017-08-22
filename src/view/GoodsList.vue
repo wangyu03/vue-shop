@@ -5,14 +5,14 @@
     <div class="accessory-result-page accessory-page">
       <div class="container">
         <div class="filter-nav">
-          <span class="sortby">Sort by:</span>
-          <a href="javascript:void(0)" class="default cur" @click="defaultGoods">Default</a>
-          <a href="javascript:void(0)" class="price" @click="sortGoods">{{price1}}
+          <span class="sortby">排序方式:</span>
+          <a href="javascript:void(0)" class="default" :class="{'cur':sortord}" @click="defaultGoods">默认</a>
+          <a href="javascript:void(0)" class="price" :class="{'cur':!sortord}" @click="sortGoods">{{price1}}
             <svg class="icon icon-arrow-short">
               <use xlink:href="#icon-arrow-short"></use>
             </svg>
           </a>
-          <a href="javascript:void(0)" class="filterby stopPop">Filter by</a>
+          <a href="javascript:void(0)" class="filterby stopPop">筛选条件：</a>
         </div>
         <div class="accessory-result">
           <!-- filter -->
@@ -20,7 +20,7 @@
             <dl class="filter-price">
               <dt>价格</dt>
               <dd>
-                <a href="javascript:void(0)" @click="setPriceFilter('all')" :class="{'cur':priceChecked == 'all'}">All</a>
+                <a href="javascript:void(0)" @click="setPriceFilter('all')" :class="{'cur':priceChecked == 'all'}">全部</a>
               </dd>
               <dd v-for="(price, index) in priceFilter">
                 <a href="javascript:void(0)" @click="setPriceFilter(index)" :class="{'cur':priceChecked == index}">{{price.startPrice}} - {{price.endPrice}}</a>
@@ -35,7 +35,7 @@
               <ul>
                 <li v-for="item in GoodsList">
                   <div class="pic">
-                    <a href="#"><img v-lazy="'/static/img/' + item.productImage" alt=""></a>
+                    <a href="#"><img v-lazy="item.productImage" alt=""></a>
                   </div>
                   <div class="main">
                     <div class="name">{{item.productName}}</div>
@@ -92,18 +92,15 @@
         sortFlag: true,
         busy: true,
         page: 1,
-        pagesize: 8,
+        sortord: false,
+        pagesize: 12,
         goods: '商品',
         price1: '从低到高 ↑',
         priceChecked: 'all',
         mdShow: false,
         mdShowCart: false,
         priceFilter: [{
-            startPrice: '0.00',
-            endPrice: '100.00'
-          },
-          {
-            startPrice: '100.00',
+            startPrice: '1.00',
             endPrice: '500.00'
           },
           {
@@ -113,6 +110,10 @@
           {
             startPrice: '1000.00',
             endPrice: '5000.00'
+          },
+          {
+            startPrice: '5000.00',
+            endPrice: '以上'
           }
         ]
       }
@@ -124,7 +125,7 @@
       Modal
     },
     mounted: function() {
-      this.getGoodsList()
+      this.defaultGoods()
     },
     methods: {
       getGoodsList(flag) {
@@ -137,13 +138,12 @@
         axios.get("/goods/list", {
           params: param
         }).then((result) => {
-          console.log(result)
+          // console.log(result)
           let res = result.data;
-          console.log(res)
           if(res.status === '0') {
-            console.log(res.result)
             if(flag) {
               this.GoodsList = this.GoodsList.concat(res.result);
+              console.log(res.result)
               if(res.result.length === 0) {
                 this.busy = true;
               } else {
@@ -159,13 +159,13 @@
         })
       },
       sortGoods() {
-      	this.page = 1;
       	if (this.sortFlag) {
       		this.price1 = '从高到低 ↓'
       	} else {
       		this.price1 = '从低到高 ↑'
       	}
         this.sortFlag = !this.sortFlag;
+        this.sortord = false; 
         this.getGoodsList();
       },
       defaultGoods() {
@@ -176,13 +176,20 @@
           pagesize: this.pagesize
         }
       	axios.get('/goods/list',{params:param}).then( (result) => {
-      		console.log('000')
-      	})
+          let res = result.data;
+          if(res.status === '0') {
+              this.GoodsList = res.result;
+              this.busy = false;
+          } else {
+            alert('系统繁忙')
+          }
+        })
+        this.sortord = true;
       },
       setPriceFilter(index) {
       	this.page = 1;
         this.priceChecked = index;
-        this.getGoodsList();
+        this.defaultGoods();
       },
       addCart(productId) {
         axios.post('/goods/addCart',{ productId }).then( (result) => {

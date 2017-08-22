@@ -59,7 +59,7 @@
                     </a>
                   </div>
                   <div class="cart-item-pic">
-                    <img :src="'/static/img/' + item.productImage">
+                    <img :src="item.productImage">
                   </div>
                   <div class="cart-item-title">
                     <div class="item-name">{{item.productName}}</div>

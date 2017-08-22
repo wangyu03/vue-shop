@@ -4,7 +4,7 @@ var productSchema = new Schema({
   "productId" : String,
   "productName" : String,
   "salePrice" : Number,
-  "productimage" : String,
+  "productImage" : String,
   "productNum": Number,
   "checked": String
 })
