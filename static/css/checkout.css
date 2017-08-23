@@ -302,7 +302,7 @@ html {
 .cart-item-list .cart-tab-2 {
   padding-top: 64px; }
 .cart-item-list .cart-tab-3 {
-  padding-top: 48px; }
+  padding-top: 64px; }
 .cart-item-list .cart-tab-4 {
   padding-top: 64px; }
 .cart-item-list .cart-tab-5 {
@@ -332,7 +332,7 @@ html {
   flex-wrap: wrap; }
 .cart-item-list .cart-item-title .item-name {
   width: 100%;
-  line-height: 76px;
+  line-height: 30px;
   color: #000;
   font-family: "moderat", sans-serif;
   font-weight: bold; }

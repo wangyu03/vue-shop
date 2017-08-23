@@ -10,7 +10,7 @@
     <div class="navbar">
       <div class="navbar-left-container">
         <a href="/">
-          <img class="navbar-brand-logo" src="/static/img/logo.png"></a>
+          <img class="navbar-brand-logo" src=""></a>
       </div>
       <div class="navbar-right-container" style="display: flex;">
         <div class="navbar-menu-container">
@@ -18,7 +18,8 @@
           <span class="navbar-link"></span>
           <span v-text="nickName" v-if="nickName"></span>
           <a href="javascript:void(0)" class="navbar-link" v-if="!nickName" @click="loginModelFlag=true">登录</a>
-          <a href="javascript:void(0)" class="navbar-link" @click="logout">退出</a>
+          <a href="javascript:void(0)" class="navbar-link" v-if="!nickName" @click="eraseSpoor">注册</a>
+          <a href="javascript:void(0)" class="navbar-link" v-if="nickName" @click="logout">退出</a>
           <div class="navbar-cart-container">
             <span class="navbar-cart-count"></span>
             <a class="navbar-link navbar-cart-link" href="/#/cart">
@@ -35,7 +36,7 @@
     <div class="md-modal modal-msg md-modal-transition" :class="{'md-show':loginModelFlag}" >
       <div class="md-modal-inner">
         <div class="md-top">
-          <div class="md-title">login in</div>
+          <div class="md-title">登录</div>
           <button class="md-close" @click="loginModelFlag = false">Close</button>
         </div>
         <div class="md-content">
@@ -45,6 +46,7 @@
             </div>
             <ul>
               <li class="regi_form_input">
+                <i class="icon IconUser"></i>
                 <input type="text" tabindex="1" name="loginname" placeholder="User Name" v-model="userName" data-type="loginname" class="regi_login_input regi_login_input_left">
               </li>
               <li class="regi_form_input noMargin">
@@ -59,8 +61,49 @@
         </div>
       </div>
     </div>
-    <!-- 遮罩层 -->
-    <div class="md-overlay" v-if="loginModelFlag" @click="loginModalFlag = false">
+      <!-- 注册框 -->
+    <div class="md-modal modal-msg md-modal-transition" :class="{'md-show':registerModelFlag}" >
+      <div class="md-modal-inner">
+        <div class="md-top">
+          <div class="md-title">注册</div>
+          <button class="md-close" @click="registerModelFlag = false">Close</button>
+        </div>
+        <div class="md-content">
+          <div class="confirm-tips">
+            <div class="error-wrap">
+              <span class="error error-show" v-show="errorOccupy">用户名已被占用</span>
+              <span class="error error-show" v-show="errorPassword">重复密码错误，请重新输入</span>
+              <span class="error error-show" v-show="errorTip">请用字母开头加数字的组合4位数以上</span>
+              <span class="error error-show" v-show="missUser">用户名不能为空请勿包含空格</span>
+              <span class="success success-show" v-show="pProgID">该用户可以注册</span>
+              <span class="error error-show" v-show="busy">系统繁忙</span>
+            </div>
+            <ul>
+              <li class="regi_form_input">
+                <i class="icon IconUser"></i>
+                <input type="text" tabindex="1" name="loginname" @input="checkForm" placeholder="User Name" v-model="userName" data-type="loginname" class="regi_login_input regi_login_input_left">
+              </li>
+              <li class="regi_form_input noMargin">
+                <i class="icon IconPwd"></i>
+                <input type="password" tabindex="2" name="password" @input="checkForm" placeholder="Password" v-model="userPwd" class="regi_login_input regi_login_input_left login-input-no input_text" @keyup.enter="login">
+              </li>
+              <li class="regi_form_input noMargin">
+                <i class="icon IconPwd"></i>
+                <input type="password" tabindex="3" name="checkPassword" @input="checkForm" placeholder="confirm password" v-model="checkUserPwd" class="regi_login_input regi_login_input_left login-input-no input_text" @keyup.enter="login">
+              </li>
+            </ul>
+          </div>
+          <div class="login-wrap">
+            <button class="btn-login" @click="register" v-bind:disabled="checkReg">确认注册</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 登录遮罩层 -->
+    <div class="md-overlay" v-if="loginModelFlag" @click="loginModelFlag = false">
+    </div>
+     <!-- 注册遮罩层 -->
+    <div class="md-overlay" v-if="registerModelFlag" @click="registerModelFlag = false">
     </div>
   </header>
 </template>
@@ -68,19 +111,30 @@
   import axios from 'axios'
   export default {
     name: 'Header',
+    // 存放数据变量
     data () {
       return {
         loginModelFlag: false,
+        registerModelFlag: false,
         userName: '',
         userPwd: '',
+        checkUserPwd: '',
+        checkReg: true,
+        busy: false,
+        missUser: false,
         errorTip: false,
+        pProgID: false,
+        errorPassword: false,
+        errorOccupy: false,
         nickName: '' 
       }
     },
+    // 生命周期挂载,在页面打开时调用
     mounted: function() {
       this.checkLogin();
     },
     methods: {
+      // 检测用户是否登录
       checkLogin () {
         axios.get("/users/checkLogin").then((response) => {
           let res = response.data;
@@ -89,6 +143,86 @@
           }
         })
       },
+      // 注册前端验证
+      checkForm () {
+        if(!this.userName ||  /\s/g.test(this.userName)){
+          this.missUser = true
+          this.pProgID = false;
+          this.errorTip = false;
+          this.errorOccupy = false;
+          this.errorPassword = false;
+          this.checkReg = true;
+          return false;
+        } else if (this.userName.length < 4 || !/^[a-zA-Z]+\w+/.test(this.userName)) {
+          this.errorTip = true;
+          this.pProgID = false;
+          this.missUser = false;
+          this.errorOccupy = false;
+          this.errorPassword = false;
+          this.checkReg = true;
+          return false;
+        } else if (this.userPwd != this.checkUserPwd) {
+          this.errorPassword = true;
+          this.missUser = false;
+          this.errorTip = false;
+          this.errorOccupy = false;
+          this.pProgID = false;
+          this.checkReg = true;
+          return false;
+        } else {
+          axios.post("/users/checkUserName",{
+            userName:this.userName
+          }).then(
+            (result)=>{
+              let res = result.data;
+              if (res.status === '1') {
+                this.errorOccupy = true;
+                this.pProgID = false;
+                this.missUser = false;
+                this.errorTip = false;
+                this.errorPassword = false;
+                this.checkReg = true;
+              } else {
+                this.errorTip = false;
+                this.missUser = false;
+                this.errorOccupy = false;
+                this.pProgID = true;
+                this.errorPassword = false;
+                this.checkReg = false;
+              }
+            }
+          )
+        }
+      },
+      // 清除注册痕迹
+      eraseSpoor () {
+        this.registerModelFlag = true;
+        this.errorOccupy = false;
+        this.pProgID = false;
+        this.missUser = false;
+        this.errorTip = false;
+        this.errorPassword = false;
+        this.busy = false;
+        this.userName = '';
+        this.userPwd = '';
+        this.checkUserPwd = '';
+      },
+      // 注册
+      register () {
+        axios.post("users/register", {
+          userName: this.userName,
+          userPwd: this.userPwd
+        }).then( (result) => {
+          let res = result.data;
+          if (res.status === '0') {
+            this.registerModelFlag = false;
+            this.login();
+          } else {
+            this.busy = true;
+          }
+        })
+      },
+      // 登录
       login () {
         if (!this.userName || !this.userPwd) {
           this.errorTip = true;
@@ -100,6 +234,7 @@
           userPwd: this.userPwd
         }).then( (response) => {
           let res = response.data;
+          console.log(response) 
           if (res.status === '0') {
             this.loginModelFlag = false;
             this.nickName = res.result.userName;
@@ -108,6 +243,7 @@
           }
         })
       },
+      // 退出
       logout () {
         axios.post('/users/logout').then( (response) => {
           let res = response.data;

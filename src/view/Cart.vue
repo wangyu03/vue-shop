@@ -34,7 +34,7 @@
       <div class="cart">
         <div class="page-title-normal">
           <h2 class="page-title-h2">
-            <span>My Cart</span>
+            <span>我的购物车</span>
           </h2>
         </div>
         <div class="item-list-wrap">
@@ -44,7 +44,7 @@
                 <li>商品</li>
                 <li>价格</li>
                 <li>数量</li>
-                <li>总价格</li>
+                <li>小计</li>
                 <li>删除</li>
               </ul>
             </div>
@@ -80,7 +80,7 @@
                   </div>
                 </div>
                 <div class="cart-tab-4">
-                  <div class="item-price-total">{{item.salePrice * item.productNum}}</div>
+                  <div class="item-price-total">{{'￥'+item.salePrice * item.productNum}}</div>
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
@@ -112,10 +112,10 @@
             <div class="cart-foot-r">
               <div class="item-total">
                 总价格:
-                <span class="total-price">{{totalPrice}}</span>
+                <span class="total-price">{{'￥'+totalPrice}}</span>
               </div>
               <div class="btn-wrap">
-                <a class="btn btn--red">Checkout</a>
+                <a class="btn btn--red">去结算</a>
               </div>
             </div>
           </div>

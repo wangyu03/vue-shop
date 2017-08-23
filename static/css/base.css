@@ -777,8 +777,7 @@ a:hover {
   html {
     font-size: 10px;
   }
-}
-
+} 
 .btn--dis-1, .btn.btn--dis, .btn[href].btn--dis {
   border-color: #ccc;
   background: transparent;
@@ -948,7 +947,7 @@ a:hover {
 
 .select-self-area {
   width: auto;
-  background: #f0f0f0;
+  background: #FFFFFF;
   border-radius: 3px;
   min-width: 50px;
   max-width: 240px;
@@ -957,10 +956,9 @@ a:hover {
 }
 
 .select-self-area .select-ipt {
-  display: block;
   min-width: 56px;
   height: 100%;
-  padding: 0 25px 0 10px;
+  padding: 0 10px 0 10px;
   border: 0;
   color: #605F5F;
   text-align: left;
@@ -1088,6 +1086,12 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+.input-add, .input-sub {
+  display: inline-block;
+  width: 30px;
+  text-align: center;
+  background: #eee;
 }
 
 textarea {

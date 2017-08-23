@@ -32,6 +32,8 @@ app.use(function(req, res, next) {
     // 加入白名单
     if (req.originalUrl === '/users/login'
        || req.originalUrl === '/users/logout'
+       || req.originalUrl === '/users/register'
+       || req.originalUrl === '/users/checkUserName'
        || req.path === '/goods/list') {
       next();
     }else {

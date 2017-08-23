@@ -6,7 +6,7 @@
       <div class="container">
         <div class="filter-nav">
           <span class="sortby">排序方式:</span>
-          <a href="javascript:void(0)" class="default" :class="{'cur':sortord}" @click="defaultGoods">默认</a>
+          <a href="javascript:void(0)" class="default" :class="{'cur':sortord}" @click="defaultGoods(false)">默认</a>
           <a href="javascript:void(0)" class="price" :class="{'cur':!sortord}" @click="sortGoods">{{price1}}
             <svg class="icon icon-arrow-short">
               <use xlink:href="#icon-arrow-short"></use>
@@ -92,7 +92,7 @@
         sortFlag: true,
         busy: true,
         page: 1,
-        sortord: false,
+        sortord: true,
         pagesize: 12,
         goods: '商品',
         price1: '从低到高 ↑',
@@ -128,9 +128,9 @@
       this.defaultGoods()
     },
     methods: {
-      getGoodsList(flag) {
+      showGoods(flag, sortMode) {
         let param = {
-          sort: this.sortFlag ? 1 : -1,
+          sort:sortMode, 
           priceLevel: this.priceChecked,
           page: this.page,
           pagesize: this.pagesize
@@ -158,6 +158,10 @@
           }
         })
       },
+      getGoodsList(flag) {
+        this.showGoods(flag, this.sortFlag ? 1 : -1)
+      },
+      // 排序商品信息
       sortGoods() {
       	if (this.sortFlag) {
       		this.price1 = '从高到低 ↓'
@@ -166,31 +170,21 @@
       	}
         this.sortFlag = !this.sortFlag;
         this.sortord = false; 
-        this.getGoodsList();
+        this.getGoodsList(false);
+        this.page = 1;
       },
-      defaultGoods() {
-      	let param = {
-          sort: 0,
-          priceLevel: this.priceChecked,
-          page: this.page,
-          pagesize: this.pagesize
-        }
-      	axios.get('/goods/list',{params:param}).then( (result) => {
-          let res = result.data;
-          if(res.status === '0') {
-              this.GoodsList = res.result;
-              this.busy = false;
-          } else {
-            alert('系统繁忙')
-          }
-        })
+      // 默认不排序商品信息
+      defaultGoods(flag) {
         this.sortord = true;
+        this.showGoods(flag, 0)
       },
+      // 价格分区
       setPriceFilter(index) {
       	this.page = 1;
         this.priceChecked = index;
         this.defaultGoods();
       },
+      // 添加购物车
       addCart(productId) {
         axios.post('/goods/addCart',{ productId }).then( (result) => {
         	let res = result.data
@@ -203,13 +197,19 @@
         	}
         })
       },
+      // 懒加载
       loadMore() {
         this.busy = true;
         setTimeout(() => {
           this.page++;
-          this.getGoodsList(true);
+          if (this.sortord) {
+            this.defaultGoods(true);
+          } else {
+            this.getGoodsList(true);
+          }
         }, 1000);
       },
+      // 
       closeModal () {
         this.mdShow = false
       }
