@@ -22,11 +22,11 @@
           <a href="javascript:void(0)" class="navbar-link" v-if="nickName" @click="logout">退出</a>
           <div class="navbar-cart-container">
             <span class="navbar-cart-count"></span>
-            <a class="navbar-link navbar-cart-link" href="/#/cart">
+            <router-link to="/cart" v-show="cart"  class="navbar-link navbar-cart-link">
               <svg class="navbar-cart-logo">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
               </svg>
-            </a>
+            </router-link>
           </div>
         </div>
       </div>
@@ -66,7 +66,7 @@
       <div class="md-modal-inner">
         <div class="md-top">
           <div class="md-title">注册</div>
-          <button class="md-close" @click="registerModelFlag = false">Close</button>
+          <button class="md-close" @click="registerModelFlag = false">关闭</button>
         </div>
         <div class="md-content">
           <div class="confirm-tips">
@@ -114,6 +114,7 @@
     // 存放数据变量
     data () {
       return {
+        cart: false,
         loginModelFlag: false,
         registerModelFlag: false,
         userName: '',
@@ -139,7 +140,8 @@
         axios.get("/users/checkLogin").then((response) => {
           let res = response.data;
           if (res.status === '0') {
-             this.nickName = res.result;
+            this.nickName = res.result;
+            this.cart = true;
           }
         })
       },
@@ -238,6 +240,7 @@
           if (res.status === '0') {
             this.loginModelFlag = false;
             this.nickName = res.result.userName;
+            this.cart = true;
           }else {
             this.errorTip = true 
           }
@@ -249,7 +252,7 @@
           let res = response.data;
           if (res.status === '0') {
             this.nickName = ''; 
-            
+            this.cart = false;
             // 在这里清除 cookie
           }
         })
