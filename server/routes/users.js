@@ -266,6 +266,65 @@ router.post("/editCheckAll", function (req, res, next) {
 	})
 })
 
+// 查询用户地址
+router.get("/address", function(req, res, next) {
+	let userId = req.cookies.userId,
+		 page = req.param('page'),
+		 pagesize = req.param('pageSize'),
+		 skip = (page - 1) * pagesize
+
+  let address = User.find({userId:userId}).limit(pagesize).skip(skip);
+	
+	address.exec({}, function(err, doc) {
+		if (err) {
+			res.json({
+				status: '1',
+				msg: '',
+				result: err.message
+			})
+		} else {
+			if (doc) {
+				res.json({
+					status: '0',
+					msg: '',
+					result: doc
+				})
+			}
+		}
+	})
+})
+
+// 删除用户地址信息
+router.post("/deleteAddress", function(req, res, next) {
+	let userId = req.cookies.userId,
+			addressId = req.body.addressId;
+  User.update({
+		userId:userId
+	}, {
+		  $pull: {
+			  'addressList': {
+				  'addressId': addressId
+			  }
+		  }			
+	}, function(err, doc) {
+    if (err) {
+			res.json({
+				status: '1',
+				msg: '删除地址失败，请稍后再试',
+				result: err.message
+			})
+		} else {
+			if (doc) {
+				res.json({
+					status: '0',
+					msg: '删除用户地址成功',
+					result: doc
+				})
+			}
+	  }
+	})
+})
+
 router.get('*', function (req, res, next) {
 	res.send('世界都是中国的!');
 })

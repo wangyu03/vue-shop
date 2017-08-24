@@ -115,7 +115,7 @@
                 <span class="total-price">{{'￥'+totalPrice}}</span>
               </div>
               <div class="btn-wrap">
-                <a class="btn btn--red">去结算</a>
+                <router-link to="/AddRess" class="btn btn--red">去结算</router-link>
               </div>
             </div>
           </div>
@@ -212,7 +212,6 @@ export default {
       axios.post("/users/cartDel", {
         productId: this.productId
       }).then((response) => {
-        let res = response.data;
         this.modalConfirm = false;
         this.init();
       })
